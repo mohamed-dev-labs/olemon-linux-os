@@ -1,21 +1,37 @@
-# Olemon Linux Installer for Windows (via WSL)
-# Developed for Olemon Incorporation
+# Olemon Linux Installer for Windows PowerShell
+# Powered by Olemon Incorporation
 
-Write-Host "--- Olemon Linux Installation Started ---" -ForegroundColor Cyan
+$ErrorActionPreference = "Stop"
 
-# Check if WSL is installed
-if (!(Get-Command wsl -ErrorAction SilentlyContinue)) {
-    Write-Host "WSL is not installed. Enabling WSL and Virtual Machine Platform..." -ForegroundColor Yellow
-    # Note: These commands require Administrator privileges
-    Write-Host "Please run PowerShell as Administrator to enable WSL features." -ForegroundColor Red
+Write-Host "===============================================" -ForegroundColor Cyan
+Write-Host "   WELCOME TO OLEMON LINUX INSTALLER" -ForegroundColor Yellow
+Write-Host "===============================================" -ForegroundColor Cyan
+
+# Check for Admin Privileges
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Host "[-] Error: Please run PowerShell as Administrator." -ForegroundColor Red
     exit
 }
 
-# Install Ubuntu (Olemon Base)
-Write-Host "Installing Olemon Base (Ubuntu)..." -ForegroundColor Green
-wsl --install -d Ubuntu
+try {
+    # Enable WSL Features
+    Write-Host "[+] Enabling WSL and Virtual Machine Platform..." -ForegroundColor Green
+    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart | Out-Null
+    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart | Out-Null
 
-# Command to run inside WSL to configure Olemon
-Write-Host "Setting up Olemon Environment..." -ForegroundColor Cyan
-Write-Host "Olemon Linux has been successfully integrated into your WSL environment." -ForegroundColor Green
-Write-Host "To start, type 'wsl' in your PowerShell." -ForegroundColor Cyan
+    # Install Ubuntu as the base for Olemon
+    Write-Host "[+] Installing Olemon Base (Ubuntu)..." -ForegroundColor Green
+    wsl --install -d Ubuntu --no-launch
+
+    Write-Host "[+] Configuring Olemon Sandbox Environment..." -ForegroundColor Cyan
+    # Instructions for the user
+    Write-Host "`nSUCCESS: Olemon Linux is ready to be configured." -ForegroundColor Green
+    Write-Host "1. Type 'wsl' to enter the system." -ForegroundColor White
+    Write-Host "2. Run 'curl -s https://raw.githubusercontent.com/mohamed-dev-labs/olemon-linux/main/setup.sh | bash' inside WSL." -ForegroundColor White
+    
+} catch {
+    Write-Host "[-] An error occurred during installation: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host "===============================================" -ForegroundColor Cyan
