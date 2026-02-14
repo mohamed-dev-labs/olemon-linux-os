@@ -33,15 +33,12 @@ EOF
 
 # 5. Performance Optimizations
 echo "--- Optimizing CPU/GPU Performance for WSL ---"
-sudo apt update && sudo apt install -y --no-install-recommends \
+sudo apt update && sudo apt install -y --no-install-recommends htop curl git build-essential
     htop \
     curl \
     git \
     build-essential \
-    ufw
 
 # Enable basic firewall for sandbox isolation
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
 
 echo "Olemon Linux Setup Complete!"
